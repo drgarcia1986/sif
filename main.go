@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"regexp"
 
 	"github.com/fatih/color"
@@ -24,6 +25,8 @@ var colorBgYellow = color.New(color.BgYellow, color.FgBlack).SprintFunc()
 var bgYellow = func(s string) string { return colorBgYellow(s) }
 var yellow = color.New(color.Bold, color.FgYellow).SprintFunc()
 var green = color.New(color.Bold, color.FgGreen)
+
+var ignoreDirs = regexp.MustCompile(`\.(svn|git*)`)
 
 func main() {
 	pattern := regexp.MustCompile("foo")
@@ -50,12 +53,21 @@ func scanDir(dir string, pattern *regexp.Regexp) ([]*FileMatched, error) {
 
 	filesMatched := make([]*FileMatched, 0)
 	for _, f := range files {
-		fm, err := scanFile(f.Name(), pattern)
-		if err != nil {
-			return nil, err
-		}
-		if fm != nil {
-			filesMatched = append(filesMatched, fm)
+		path := filepath.Join(dir, f.Name())
+		if f.IsDir() && !ignoreDirs.MatchString(f.Name()) {
+			fs, err := scanDir(path, pattern)
+			if err != nil {
+				return nil, err
+			}
+			filesMatched = append(filesMatched, fs...)
+		} else {
+			fm, err := scanFile(path, pattern)
+			if err != nil {
+				return nil, err
+			}
+			if fm != nil {
+				filesMatched = append(filesMatched, fm)
+			}
 		}
 	}
 
