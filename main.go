@@ -4,7 +4,9 @@ import (
 	"bufio"
 	"flag"
 	"fmt"
+	"io"
 	"io/ioutil"
+	"net/http"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -22,12 +24,13 @@ type FileMatched struct {
 	Matches []Match
 }
 
-var colorBgYellow = color.New(color.BgYellow, color.FgBlack).SprintFunc()
-var bgYellow = func(s string) string { return colorBgYellow(s) }
-var yellow = color.New(color.Bold, color.FgYellow).SprintFunc()
-var green = color.New(color.Bold, color.FgGreen)
-
-var ignoreDirs = regexp.MustCompile(`\.(svn|git*)`)
+var (
+	colorBgYellow = color.New(color.BgYellow, color.FgBlack).SprintFunc()
+	bgYellow      = func(s string) string { return colorBgYellow(s) }
+	yellow        = color.New(color.Bold, color.FgYellow).SprintFunc()
+	green         = color.New(color.Bold, color.FgGreen)
+	ignoreDirs    = regexp.MustCompile(`\.(svn|git*)`)
+)
 
 func main() {
 	flag.Parse()
@@ -74,13 +77,7 @@ func scanDir(dir string, pattern *regexp.Regexp) ([]*FileMatched, error) {
 	filesMatched := make([]*FileMatched, 0)
 	for _, f := range files {
 		path := filepath.Join(dir, f.Name())
-		if f.IsDir() && !ignoreDirs.MatchString(f.Name()) {
-			fs, err := scanDir(path, pattern)
-			if err != nil {
-				return nil, err
-			}
-			filesMatched = append(filesMatched, fs...)
-		} else {
+		if !f.IsDir() {
 			fm, err := scanFile(path, pattern)
 			if err != nil {
 				return nil, err
@@ -88,34 +85,54 @@ func scanDir(dir string, pattern *regexp.Regexp) ([]*FileMatched, error) {
 			if fm != nil {
 				filesMatched = append(filesMatched, fm)
 			}
+		} else if !ignoreDirs.MatchString(f.Name()) {
+			fs, err := scanDir(path, pattern)
+			if err != nil {
+				return nil, err
+			}
+			filesMatched = append(filesMatched, fs...)
 		}
 	}
 
 	return filesMatched, nil
 }
 
-func scanFile(filename string, pattern *regexp.Regexp) (*FileMatched, error) {
-	file, err := os.Open(filename)
+func scanFile(path string, pattern *regexp.Regexp) (*FileMatched, error) {
+	file, err := os.Open(path)
 	if err != nil {
 		return nil, err
 	}
 	defer file.Close()
 
+	if b, err := isBinary(file); b || err != nil {
+		return nil, err
+	}
+
+	line := 1
 	matches := make([]Match, 0)
-	lineCount := 1
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		text := scanner.Text()
 		if pattern.MatchString(text) {
 			text := pattern.ReplaceAllStringFunc(text, bgYellow)
-			matches = append(matches, Match{lineCount, text})
+			matches = append(matches, Match{line, text})
 		}
-		lineCount++
+		line++
 	}
 
 	if len(matches) > 0 {
-		return &FileMatched{filename, matches}, nil
+		return &FileMatched{path, matches}, nil
 	}
 
 	return nil, nil
+}
+
+func isBinary(file *os.File) (bool, error) {
+	buffer := make([]byte, 512)
+	n, err := file.Read(buffer)
+	if err != nil && err != io.EOF {
+		return true, err
+	}
+	file.Seek(0, 0)
+	return http.DetectContentType(buffer[:n]) == "application/octet-stream", nil
 }
