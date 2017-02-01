@@ -60,10 +60,13 @@ func main() {
 		files = append(files, fs...)
 	}
 
-	for _, f := range files {
+	for i, f := range files {
 		green.Println(f.Name)
 		for _, match := range f.Matches {
 			fmt.Printf("%s: %s\n", yellow(match.Line), match.Text)
+		}
+		if i+1 < len(files) {
+			fmt.Println()
 		}
 	}
 }
