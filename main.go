@@ -41,7 +41,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	pattern := regexp.MustCompile(args[0])
+	pattern := regexp.MustCompile(fmt.Sprintf("(?i)%s", args[0]))
 
 	dirs := make([]string, 0)
 	if len(args) < 2 {
