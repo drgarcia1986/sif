@@ -5,7 +5,6 @@ import (
 	"flag"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -41,7 +40,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	pattern := regexp.MustCompile(args[0])
+	pattern := regexp.MustCompile(fmt.Sprintf("(?i)%s", args[0]))
 
 	dirs := make([]string, 0)
 	if len(args) < 2 {
@@ -72,29 +71,29 @@ func main() {
 }
 
 func scanDir(dir string, pattern *regexp.Regexp) ([]*FileMatched, error) {
-	files, err := ioutil.ReadDir(dir)
+	filesMatched := make([]*FileMatched, 0)
+	err := filepath.Walk(dir, func(path string, info os.FileInfo, e error) error {
+		if e != nil {
+			return e
+		}
+		if info.IsDir() {
+			if ignoreDirs.MatchString(info.Name()) {
+				return filepath.SkipDir
+			}
+			return nil
+		}
+		fm, err := scanFile(path, pattern)
+		if err != nil {
+			return err
+		}
+		if fm != nil {
+			filesMatched = append(filesMatched, fm)
+		}
+		return nil
+	})
+
 	if err != nil {
 		return nil, err
-	}
-
-	filesMatched := make([]*FileMatched, 0)
-	for _, f := range files {
-		path := filepath.Join(dir, f.Name())
-		if !f.IsDir() {
-			fm, err := scanFile(path, pattern)
-			if err != nil {
-				return nil, err
-			}
-			if fm != nil {
-				filesMatched = append(filesMatched, fm)
-			}
-		} else if !ignoreDirs.MatchString(f.Name()) {
-			fs, err := scanDir(path, pattern)
-			if err != nil {
-				return nil, err
-			}
-			filesMatched = append(filesMatched, fs...)
-		}
 	}
 
 	return filesMatched, nil
