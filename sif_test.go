@@ -13,15 +13,18 @@ func TestScanFileLineNumbers(t *testing.T) {
 	}{
 		{"python.txt", "better", []int{3, 4, 5, 6, 7, 8, 17, 18}},
 		{"golang.txt", "interface", []int{5, 7}},
-		{"subdir/hello.go", "world", []int{6}},
+		{"subdir/hello.go", "World", []int{6}},
 	}
 
 	for _, tc := range scanFileTests {
-		s := New(tc.pattern)
+		s := New(tc.pattern, Options{false})
 		filename := fmt.Sprintf("./_tests/%s", tc.filename)
 		fm, err := s.ScanFile(filename)
 		if err != nil {
 			t.Fatalf("Error on scan file %s: %s", tc.filename, err)
+		}
+		if fm == nil {
+			t.Fatalf("Does not found pattern %s in file %s", tc.pattern, tc.filename)
 		}
 		for i, match := range fm.Matches {
 			expected := tc.lineNumbers[i]
@@ -33,8 +36,22 @@ func TestScanFileLineNumbers(t *testing.T) {
 	}
 }
 
+func TestScanFileCaseInsensitive(t *testing.T) {
+	s := New("world", Options{CaseInsensitive: true})
+	fm, err := s.ScanFile("./_tests/subdir/hello.go")
+	if err != nil {
+		t.Fatalf("Error on scan file %s", err)
+	}
+	if fm == nil {
+		t.Fatal("Does not found pattern in file")
+	}
+	if fm.Matches[0].Line != 6 {
+		t.Errorf("expected 6, got %d", fm.Matches[0].Line)
+	}
+}
+
 func TestScanFileText(t *testing.T) {
-	s := New("import")
+	s := New("import", Options{false})
 	expected := s.pattern.ReplaceAllStringFunc(`import "fmt"`, bgYellow)
 
 	fm, err := s.ScanFile("./_tests/subdir/hello.go")
@@ -53,7 +70,7 @@ func TestScanFileText(t *testing.T) {
 
 func TestScanDir(t *testing.T) {
 	expectedFiles := []string{"golang.txt", "subdir/hello.go"}
-	s := New("fmt")
+	s := New("fmt", Options{false})
 
 	files, err := s.ScanDir("./_tests")
 	if err != nil {
