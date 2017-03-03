@@ -37,25 +37,13 @@ func scan(pattern string, dirs ...string) ([]*FileMatched, error) {
 	s := New(pattern)
 	files := make([]*FileMatched, 0)
 	for _, dir := range dirs {
-		f, err := os.Stat(dir)
+		fs, err := s.Scan(dir)
 		if err != nil {
 			return nil, err
 		}
 
-		if f.IsDir() {
-			fs, err := s.ScanDir(dir)
-			if err != nil {
-				return nil, err
-			}
+		if fs != nil {
 			files = append(files, fs...)
-		} else {
-			fm, err := s.ScanFile(dir)
-			if err != nil {
-				return nil, err
-			}
-			if fm != nil {
-				files = append(files, fm)
-			}
 		}
 	}
 	return files, nil

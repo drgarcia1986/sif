@@ -23,6 +23,22 @@ type Sif struct {
 	pattern *regexp.Regexp
 }
 
+func (s *Sif) Scan(path string) ([]*FileMatched, error) {
+	f, err := os.Stat(path)
+	if err != nil {
+		return nil, err
+	}
+	if f.IsDir() {
+		return s.ScanDir(path)
+	}
+
+	fm, err := s.ScanFile(path)
+	if fm != nil {
+		return []*FileMatched{fm}, err
+	}
+	return nil, err
+}
+
 func (s *Sif) ScanDir(dir string) ([]*FileMatched, error) {
 	files, err := ioutil.ReadDir(dir)
 	if err != nil {
