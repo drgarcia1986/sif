@@ -29,7 +29,7 @@ func TestIsBinary(t *testing.T) {
 		}
 
 		if actual != tc.expected {
-			t.Errorf("expected %s, got %s", tc.expected, actual)
+			t.Errorf("expected %t, got %t", tc.expected, actual)
 		}
 	}
 }
