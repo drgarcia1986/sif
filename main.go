@@ -13,7 +13,7 @@ func main() {
 	args := flag.Args()
 
 	if len(args) == 0 {
-		fmt.Println("usage: sif <pattern> [directories...]")
+		fmt.Println("usage: sif <pattern> [files or directories]")
 		os.Exit(1)
 	}
 
