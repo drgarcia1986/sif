@@ -43,3 +43,27 @@ $ time sif better
 ...
         0.01 real         0.00 user         0.00 sys
 ```
+
+## Library Use Example
+```go
+package main
+
+import (
+	"fmt"
+
+	sif "github.com/drgarcia1986/sif/src"
+)
+
+func main() {
+	s := sif.New("fmt", sif.Options{CaseInsensitive: false})
+	fm, err := s.ScanFile("./main.go")
+	if err != nil {
+		panic(err)
+	}
+	if fm != nil {
+		for _, m := range fm.Matches {
+			fmt.Printf("Line: %d, Text: %s\n", m.Line, m.Text)
+		}
+	}
+}
+```

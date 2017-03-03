@@ -5,10 +5,11 @@ import (
 	"fmt"
 	"os"
 
+	sif "github.com/drgarcia1986/sif/src"
 	"github.com/fatih/color"
 )
 
-var opt Options
+var opt sif.Options
 
 func init() {
 	flag.BoolVar(&opt.CaseInsensitive, "i", false, "Ignore case distinctions in PATTERN")
@@ -39,9 +40,9 @@ func main() {
 	show(files...)
 }
 
-func scan(pattern string, dirs ...string) ([]*FileMatched, error) {
-	s := New(pattern, opt)
-	files := make([]*FileMatched, 0)
+func scan(pattern string, dirs ...string) ([]*sif.FileMatched, error) {
+	s := sif.New(pattern, opt)
+	files := make([]*sif.FileMatched, 0)
 	for _, dir := range dirs {
 		fs, err := s.Scan(dir)
 		if err != nil {
@@ -55,7 +56,7 @@ func scan(pattern string, dirs ...string) ([]*FileMatched, error) {
 	return files, nil
 }
 
-func show(files ...*FileMatched) {
+func show(files ...*sif.FileMatched) {
 	green := color.New(color.Bold, color.FgGreen)
 	yellow := color.New(color.Bold, color.FgYellow).SprintFunc()
 	for i, f := range files {
