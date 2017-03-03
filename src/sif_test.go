@@ -107,7 +107,7 @@ func TestScan(t *testing.T) {
 			t.Fatalf("Error on scan path %s", err)
 		}
 		if len(fs) != len(tc.expectedFiles) {
-			t.Errorf("expected %s, got %s", len(tc.expectedFiles), len(fs))
+			t.Errorf("expected %d, got %d", len(tc.expectedFiles), len(fs))
 		}
 		for i, f := range fs {
 			expected := fmt.Sprintf("_tests/%s", tc.expectedFiles[i])
