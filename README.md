@@ -51,7 +51,7 @@ package main
 import (
 	"fmt"
 
-	sif "github.com/drgarcia1986/sif/src"
+	sif "github.com/drgarcia1986/sif/core"
 )
 
 func main() {
