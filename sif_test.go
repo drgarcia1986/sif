@@ -71,3 +71,32 @@ func TestScanDir(t *testing.T) {
 		}
 	}
 }
+
+func TestScan(t *testing.T) {
+	var scanTests = []struct {
+		pattern       string
+		path          string
+		expectedFiles []string
+	}{
+		{"fmt", "golang.txt", []string{"golang.txt"}},
+		{"fmt", "", []string{"golang.txt", "subdir/hello.go"}},
+	}
+
+	for _, tc := range scanTests {
+		s := New(tc.pattern)
+		path := fmt.Sprintf("_tests/%s", tc.path)
+		fs, err := s.Scan(path)
+		if err != nil {
+			t.Fatalf("Error on scan path %s", err)
+		}
+		if len(fs) != len(tc.expectedFiles) {
+			t.Errorf("expected %s, got %s", len(tc.expectedFiles), len(fs))
+		}
+		for i, f := range fs {
+			expected := fmt.Sprintf("_tests/%s", tc.expectedFiles[i])
+			if f.Name != expected {
+				t.Errorf("expected %s, got %s", expected, f.Name)
+			}
+		}
+	}
+}
