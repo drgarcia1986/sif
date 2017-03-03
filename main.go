@@ -24,17 +24,29 @@ func main() {
 		dirs = append(dirs, args[1:]...)
 	}
 
-	s := New(args[0])
+	files, err := scan(args[0], dirs...)
+	if err != nil {
+		fmt.Printf("error to search for pattern: %s", err)
+		os.Exit(1)
+	}
+
+	show(files...)
+}
+
+func scan(pattern string, dirs ...string) ([]*FileMatched, error) {
+	s := New(pattern)
 	files := make([]*FileMatched, 0)
 	for _, dir := range dirs {
 		fs, err := s.ScanDir(dir)
 		if err != nil {
-			fmt.Printf("error to search for pattern: %s", err)
-			os.Exit(1)
+			return nil, err
 		}
 		files = append(files, fs...)
 	}
+	return files, nil
+}
 
+func show(files ...*FileMatched) {
 	green := color.New(color.Bold, color.FgGreen)
 	yellow := color.New(color.Bold, color.FgYellow).SprintFunc()
 	for i, f := range files {
