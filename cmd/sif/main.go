@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	sif "github.com/drgarcia1986/sif/core"
+	"github.com/drgarcia1986/sif"
 	"github.com/fatih/color"
 )
 
