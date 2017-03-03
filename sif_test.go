@@ -100,7 +100,7 @@ func TestScan(t *testing.T) {
 	}
 
 	for _, tc := range scanTests {
-		s := New(tc.pattern)
+		s := New(tc.pattern, Options{false})
 		path := fmt.Sprintf("_tests/%s", tc.path)
 		fs, err := s.Scan(path)
 		if err != nil {
