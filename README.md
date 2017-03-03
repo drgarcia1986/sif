@@ -27,14 +27,19 @@ _tests/python.txt
 sif_test.go
 14:             {"python.txt", "better", []int{3, 4, 5, 6, 7, 8, 17, 18}},
 ```
-Same search with `ack` and `sif`, time comparison:
+Same search with `ack`, `grep` and `sif`, time comparison:
 ```
 $ time ack better
 ...
         0.11 real         0.07 user         0.01 sys
 ```
 ```
+$ time grep better -rn *
+...
+        0.04 real         0.03 user         0.00 sys
+```
+```
 $ time sif better
 ...
-        0.03 real         0.00 user         0.01 sys
+        0.01 real         0.00 user         0.00 sys
 ```
