@@ -19,8 +19,13 @@ type FileMatched struct {
 	Matches []Match
 }
 
+type Options struct {
+	CaseInsensitive bool
+}
+
 type Sif struct {
 	pattern *regexp.Regexp
+	options Options
 }
 
 func (s *Sif) Scan(path string) ([]*FileMatched, error) {
@@ -98,7 +103,10 @@ func (s *Sif) ScanFile(path string) (*FileMatched, error) {
 	return nil, nil
 }
 
-func New(pattern string) *Sif {
-	p := regexp.MustCompile(fmt.Sprintf("(?i)%s", pattern))
-	return &Sif{p}
+func New(pattern string, options Options) *Sif {
+	if options.CaseInsensitive {
+		pattern = fmt.Sprintf("(?i)%s", pattern)
+	}
+	p := regexp.MustCompile(pattern)
+	return &Sif{p, options}
 }

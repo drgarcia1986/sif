@@ -8,6 +8,12 @@ import (
 	"github.com/fatih/color"
 )
 
+var opt Options
+
+func init() {
+	flag.BoolVar(&opt.CaseInsensitive, "i", false, "Ignore case distinctions in PATTERN")
+}
+
 func main() {
 	flag.Parse()
 	args := flag.Args()
@@ -34,7 +40,7 @@ func main() {
 }
 
 func scan(pattern string, dirs ...string) ([]*FileMatched, error) {
-	s := New(pattern)
+	s := New(pattern, opt)
 	files := make([]*FileMatched, 0)
 	for _, dir := range dirs {
 		fs, err := s.Scan(dir)
