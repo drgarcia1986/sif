@@ -6,6 +6,12 @@
 **S**earch **I**n **F**iles  
 An experimental [ack](https://github.com/petdance/ack2) written in Go.  
 
+## Installation
+If you have a Golang environment setup, you can simply run:
+```
+$ go get -u github.com/drgarcia1986/sif/cmd/sif
+```
+
 ## Example
 Run against repo dir:
 ```
@@ -44,14 +50,14 @@ $ time sif better
         0.01 real         0.00 user         0.00 sys
 ```
 
-## Library Use Example
+## Library Usage Example
 ```go
 package main
 
 import (
 	"fmt"
 
-	sif "github.com/drgarcia1986/sif/src"
+	"github.com/drgarcia1986/sif"
 )
 
 func main() {
