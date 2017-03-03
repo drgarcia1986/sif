@@ -1,9 +1,10 @@
 # SIF
 [![Build Status](https://travis-ci.org/drgarcia1986/sif.svg)](https://travis-ci.org/drgarcia1986/sif)
+[![Go Report Card](https://goreportcard.com/badge/drgarcia1986/sif)](https://goreportcard.com/report/drgarcia1986/sif)
 
 
 **S**earch **I**n **F**iles  
-An experimental [ack](https://github.com/petdance/ack2) writed in Go.  
+An experimental [ack](https://github.com/petdance/ack2) written in Go.  
 
 ## Example
 Run against repo dir:
