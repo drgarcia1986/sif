@@ -1,6 +1,7 @@
 # SIF
 [![Build Status](https://travis-ci.org/drgarcia1986/sif.svg)](https://travis-ci.org/drgarcia1986/sif)
 [![Go Report Card](https://goreportcard.com/badge/drgarcia1986/sif)](https://goreportcard.com/report/drgarcia1986/sif)
+[![codecov](https://codecov.io/gh/drgarcia1986/sif/branch/master/graph/badge.svg)](https://codecov.io/gh/drgarcia1986/sif)
 
 
 **S**earch **I**n **F**iles  
