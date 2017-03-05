@@ -12,6 +12,14 @@ import (
 var opt sif.Options
 
 func init() {
+	flag.Usage = func() {
+		fmt.Fprintf(os.Stdout, "Usage: %s [OPTION]... PATTERN [FILES OR DIRECTORIES]\n\n", os.Args[0])
+		fmt.Fprint(os.Stdout, "Search for PATTERN in each source file in the tree from the current\n")
+		fmt.Fprint(os.Stdout, "directory on down.  If any files or directories are specified, then\n")
+		fmt.Fprint(os.Stdout, "only those files and directories are checked.\n\n")
+		fmt.Fprintf(os.Stdout, "Example: %s -i select\n\n", os.Args[0])
+		flag.PrintDefaults()
+	}
 	flag.BoolVar(&opt.CaseInsensitive, "i", false, "Ignore case distinctions in PATTERN")
 }
 
@@ -20,7 +28,7 @@ func main() {
 	args := flag.Args()
 
 	if len(args) == 0 {
-		fmt.Println("usage: sif <pattern> [files or directories]")
+		flag.Usage()
 		os.Exit(1)
 	}
 
