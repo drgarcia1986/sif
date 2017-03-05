@@ -27,15 +27,14 @@ func main() {
 	flag.Parse()
 	args := flag.Args()
 
-	if len(args) == 0 {
+	dirs := make([]string, 0)
+	switch flag.NArg() {
+	case 0: // without pattern
 		flag.Usage()
 		os.Exit(1)
-	}
-
-	dirs := make([]string, 0)
-	if len(args) < 2 {
+	case 1: // without targets
 		dirs = append(dirs, "./")
-	} else {
+	default:
 		dirs = append(dirs, args[1:]...)
 	}
 
