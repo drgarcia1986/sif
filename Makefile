@@ -9,5 +9,8 @@ coverage:
 coverage-report:
 	@./.tests-utils.sh coverage-report
 
+test-e2e:
+	@./.tests-utils.sh e2e
+
 build:
 	@go build -o sif cmd/sif/main.go
