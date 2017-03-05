@@ -5,6 +5,8 @@ go:
   - 1.8
   - tip
 
-script: make coverage-report
+script:
+  - make test-e2e
+  - make coverage-report
 
 after_success: bash <(curl -s https://codecov.io/bash)
