@@ -5,6 +5,6 @@ go:
   - 1.8
   - tip
 
-script: ./.tests-run.sh
+script: make coverage-report
 
 after_success: bash <(curl -s https://codecov.io/bash)
