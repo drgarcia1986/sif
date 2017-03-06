@@ -7,6 +7,8 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+
+	"golang.org/x/sync/errgroup"
 )
 
 type Match struct {
@@ -27,6 +29,8 @@ type Sif struct {
 	pattern *regexp.Regexp
 	options Options
 }
+
+var sem = make(chan int, 10)
 
 func (s *Sif) Scan(path string) ([]*FileMatched, error) {
 	f, err := os.Stat(path)
@@ -50,30 +54,56 @@ func (s *Sif) ScanDir(dir string) ([]*FileMatched, error) {
 		return nil, err
 	}
 
-	filesMatched := make([]*FileMatched, 0)
+	var g errgroup.Group
+	ch := make(chan *FileMatched)
 	for _, f := range files {
 		path := filepath.Join(dir, f.Name())
 		if !f.IsDir() {
-			fm, err := s.ScanFile(path)
-			if err != nil {
-				return nil, err
-			}
-			if fm != nil {
-				filesMatched = append(filesMatched, fm)
-			}
+			g.Go(func() error {
+				fm, err := s.ScanFile(path)
+				if err != nil {
+					return err
+				}
+				if fm != nil {
+					ch <- fm
+				}
+				return nil
+			})
 		} else if !ignoreDirs.MatchString(f.Name()) {
-			fs, err := s.ScanDir(path)
-			if err != nil {
-				return nil, err
-			}
-			filesMatched = append(filesMatched, fs...)
+			g.Go(func() error {
+				fs, err := s.ScanDir(path)
+				if err != nil {
+					return err
+				}
+				for _, fm := range fs {
+					ch <- fm
+				}
+				return nil
+			})
 		}
+	}
+
+	go func() {
+		g.Wait()
+		close(ch)
+	}()
+
+	filesMatched := make([]*FileMatched, 0)
+	for fm := range ch {
+		filesMatched = append(filesMatched, fm)
+	}
+
+	if err = g.Wait(); err != nil {
+		return nil, err
 	}
 
 	return filesMatched, nil
 }
 
 func (s *Sif) ScanFile(path string) (*FileMatched, error) {
+	sem <- 1
+	defer func() { <-sem }()
+
 	file, err := os.Open(path)
 	if err != nil {
 		return nil, err
