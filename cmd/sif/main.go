@@ -9,7 +9,10 @@ import (
 	"github.com/fatih/color"
 )
 
-var opt sif.Options
+var (
+	opt                sif.Options
+	printOnlyFilenames bool
+)
 
 func init() {
 	flag.Usage = func() {
@@ -21,6 +24,7 @@ func init() {
 		flag.PrintDefaults()
 	}
 	flag.BoolVar(&opt.CaseInsensitive, "i", false, "Ignore case distinctions in PATTERN")
+	flag.BoolVar(&printOnlyFilenames, "l", false, "Only print filenames containing matches")
 }
 
 func main() {
@@ -68,6 +72,9 @@ func show(files ...*sif.FileMatched) {
 	yellow := color.New(color.Bold, color.FgYellow).SprintFunc()
 	for i, f := range files {
 		green.Println(f.Name)
+		if printOnlyFilenames {
+			continue
+		}
 		for _, match := range f.Matches {
 			fmt.Printf("%s: %s\n", yellow(match.Line), match.Text)
 		}
