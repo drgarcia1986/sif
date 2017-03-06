@@ -102,7 +102,18 @@ function _e2e_case_insensitive_flag() {
     check_result "$($cmd | head -n 1)" "_tests/golang.txt"
     check_result "$($cmd | tail -n 1)" "12: Cgo is not Go."
 
-    echo_green OK
+    echo_green "OK"
+}
+
+function _e2e_only_filenames_flag() {
+    printf "Testing with -l flag (print only file names)... "
+    local cmd="./sif -l Cgo"
+
+    check_result "$($cmd | wc -l | tr -d '[:space:]')" "2"
+    check_result "$($cmd | head -n 1)" "$(basename $0)"
+    check_result "$($cmd | tail -n 1)" "_tests/golang.txt"
+
+    echo_green "OK"
 }
 
 function e2e() {
@@ -115,6 +126,7 @@ function e2e() {
 
     echo_yellow " - FLAGS TESTS"
     _e2e_case_insensitive_flag
+    _e2e_only_filenames_flag
 
     rm sif
     echo_yellow "FINISH"
