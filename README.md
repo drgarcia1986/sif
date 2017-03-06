@@ -12,6 +12,7 @@ If you have a Golang environment setup, you can simply run:
 ```
 $ go get -u github.com/drgarcia1986/sif/cmd/sif
 ```
+Or get binaries on [releases](https://github.com/drgarcia1986/sif/releases)
 
 ## Example
 Run against repo dir:
