@@ -9,9 +9,12 @@ import (
 	"github.com/fatih/color"
 )
 
+const version = "0.0.1"
+
 var (
 	opt                sif.Options
 	printOnlyFilenames bool
+	showVersion        bool
 )
 
 func init() {
@@ -25,11 +28,17 @@ func init() {
 	}
 	flag.BoolVar(&opt.CaseInsensitive, "i", false, "Ignore case distinctions in PATTERN")
 	flag.BoolVar(&printOnlyFilenames, "l", false, "Only print filenames containing matches")
+	flag.BoolVar(&showVersion, "v", false, "Display version")
 }
 
 func main() {
 	flag.Parse()
 	args := flag.Args()
+
+	if showVersion {
+		fmt.Printf("%s: %s", os.Args[0], version)
+		os.Exit(0)
+	}
 
 	dirs := make([]string, 0)
 	switch flag.NArg() {
