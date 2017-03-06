@@ -14,6 +14,8 @@ $ go get -u github.com/drgarcia1986/sif/cmd/sif
 ```
 Or get binaries on [releases](https://github.com/drgarcia1986/sif/releases)
 
+> For windows users: Colors works only in PowerShell
+
 ## Example
 Run against repo dir:
 ```
