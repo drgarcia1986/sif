@@ -61,7 +61,11 @@ func main() {
 }
 
 func scan(pattern string, dirs ...string) ([]*sif.FileMatched, error) {
-	s := sif.New(pattern, opt)
+	s, err := sif.New(pattern, opt)
+	if err != nil {
+		fmt.Printf("Invalid pattern: %s\n", err)
+		os.Exit(1)
+	}
 	files := make([]*sif.FileMatched, 0)
 	for _, dir := range dirs {
 		fs, err := s.Scan(dir)
