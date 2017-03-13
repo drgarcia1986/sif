@@ -107,6 +107,10 @@ func New(pattern string, options Options) *Sif {
 	if options.CaseInsensitive {
 		pattern = fmt.Sprintf("(?i)%s", pattern)
 	}
-	p := regexp.MustCompile(pattern)
+	p, err := regexp.Compile(pattern)
+	if err != nil {
+		fmt.Printf("Invalid pattern: %s\n", err)
+		os.Exit(1)
+	}
 	return &Sif{p, options}
 }
