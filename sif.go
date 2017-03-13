@@ -103,14 +103,13 @@ func (s *Sif) ScanFile(path string) (*FileMatched, error) {
 	return nil, nil
 }
 
-func New(pattern string, options Options) *Sif {
+func New(pattern string, options Options) (*Sif, error) {
 	if options.CaseInsensitive {
 		pattern = fmt.Sprintf("(?i)%s", pattern)
 	}
 	p, err := regexp.Compile(pattern)
 	if err != nil {
-		fmt.Printf("Invalid pattern: %s\n", err)
-		os.Exit(1)
+		return nil, err
 	}
-	return &Sif{p, options}
+	return &Sif{p, options}, nil
 }
