@@ -65,7 +65,7 @@ import (
 )
 
 func main() {
-	s := sif.New("fmt", sif.Options{CaseInsensitive: false})
+	s, _ := sif.New("fmt", sif.Options{CaseInsensitive: false})
 	fm, err := s.ScanFile("./main.go")
 	if err != nil {
 		panic(err)

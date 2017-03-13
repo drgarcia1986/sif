@@ -116,6 +116,14 @@ function _e2e_only_filenames_flag() {
     echo_green "OK"
 }
 
+function _e2e_invalid_pattern() {
+    printf "Testing with invalid pattern (don't panic)..."
+    local cmd="./sif \["
+
+    check_result "$($cmd | grep 'Invalid pattern' | wc -l | tr -d '[:space:]')" "1"
+    echo_green "OK"
+}
+
 function e2e() {
     echo_yellow "START E2E TESTS"
     _e2e_build
@@ -123,6 +131,7 @@ function e2e() {
     _e2e_single_file
     _e2e_dir
     _e2e_with_two_targets
+    _e2e_invalid_pattern
 
     echo_yellow " - FLAGS TESTS"
     _e2e_case_insensitive_flag

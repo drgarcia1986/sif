@@ -17,7 +17,11 @@ func TestScanFileLineNumbers(t *testing.T) {
 	}
 
 	for _, tc := range scanFileTests {
-		s := New(tc.pattern, Options{false})
+		s, err := New(tc.pattern, Options{false})
+		if err != nil {
+			t.Fatalf("Error on create sif %s", err)
+		}
+
 		filename := fmt.Sprintf("./_tests/%s", tc.filename)
 		fm, err := s.ScanFile(filename)
 		if err != nil {
@@ -37,7 +41,11 @@ func TestScanFileLineNumbers(t *testing.T) {
 }
 
 func TestScanFileCaseInsensitive(t *testing.T) {
-	s := New("world", Options{CaseInsensitive: true})
+	s, err := New("world", Options{CaseInsensitive: true})
+	if err != nil {
+		t.Fatalf("Error on create sif %s", err)
+	}
+
 	fm, err := s.ScanFile("./_tests/subdir/hello.go")
 	if err != nil {
 		t.Fatalf("Error on scan file %s", err)
@@ -50,8 +58,19 @@ func TestScanFileCaseInsensitive(t *testing.T) {
 	}
 }
 
+func TestDontPanicWithInvalidPatterns(t *testing.T) {
+	_, err := New("[", Options{false})
+	if err == nil {
+		t.Fatalf("Expected error for an invalid pattern")
+	}
+}
+
 func TestScanFileText(t *testing.T) {
-	s := New("import", Options{false})
+	s, err := New("import", Options{false})
+	if err != nil {
+		t.Fatalf("Error on create sif %s", err)
+	}
+
 	expected := s.pattern.ReplaceAllStringFunc(`import "fmt"`, bgYellow)
 
 	fm, err := s.ScanFile("./_tests/subdir/hello.go")
@@ -70,7 +89,10 @@ func TestScanFileText(t *testing.T) {
 
 func TestScanDir(t *testing.T) {
 	expectedFiles := []string{"golang.txt", "subdir/hello.go"}
-	s := New("fmt", Options{false})
+	s, err := New("fmt", Options{false})
+	if err != nil {
+		t.Fatalf("Error on create sif %s", err)
+	}
 
 	files, err := s.ScanDir("./_tests")
 	if err != nil {
@@ -100,7 +122,11 @@ func TestScan(t *testing.T) {
 	}
 
 	for _, tc := range scanTests {
-		s := New(tc.pattern, Options{false})
+		s, err := New(tc.pattern, Options{false})
+		if err != nil {
+			t.Fatalf("Error on create sif %s", err)
+		}
+
 		path := fmt.Sprintf("_tests/%s", tc.path)
 		fs, err := s.Scan(path)
 		if err != nil {
